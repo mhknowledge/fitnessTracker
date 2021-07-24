@@ -2,8 +2,7 @@
 
 fitnessTracker is a webapp that grants users the ability to create and track daily exercise routines and progress.  With this app user can customize their workout routines to their liking and schedules.
 
-## Quick Demo
-[Demo: https://drive.google.com/file/d/13N45OzYcqpxigk8mPh_8Myh2wOyP-JTn/view](https://drive.google.com/file/d/13N45OzYcqpxigk8mPh_8Myh2wOyP-JTn/view)
+##Demo
 
  ![image](https://user-images.githubusercontent.com/79174643/126880116-e33082e6-f54a-4b3a-8657-f1eb03833f5b.png)
  ![image](https://user-images.githubusercontent.com/79174643/126880125-5a3cdd35-e71f-43ac-bea2-9cc47afb3c9e.png)
