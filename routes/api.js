@@ -1,72 +1,59 @@
-const router = require('express').Router();
-const Workout = require('../models/workout.js');
+const router = require("express").Router();
+const db = require("../models");
 
-router.post('/api/workouts', (req, res) => {
-  Workout.create({})
-    .then((dbWorkout) => {
-      res.json(dbWorkout);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
+router.get("/api/workouts", (req, res) => {
+  db.Workout.aggregate([{
+    $addFields: {
+      totalDuration: { $sum: "$exercises.duration" }
+    }
+  }])
+  .sort({ day: 1 })
+  .then(dbWorkouts => {
+    res.json(dbWorkouts);
+  })
+  .catch(err => {
+    res.status(400).json(err);
+  });
 });
 
-router.put('/api/workouts/:id', ({ body, params }, res) => {
-  Workout.findByIdAndUpdate(
-    params.id,
-    { $push: { exercises: body } },
-    // "runValidators" will ensure new exercises meet our schema requirements
-    { new: true, runValidators: true }
+// Update current workout
+router.put("/api/workouts/:id", (req, res) => {
+  db.Workout.findOneAndUpdate(
+    { _id:req.params.id }, 
+    { $push: { exercises:req.body } }
   )
-    .then((dbWorkout) => {
-      res.json(dbWorkout);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
+  .then(dbWorkout => {
+    res.json(dbWorkout);
+  })
+  .catch(err => {
+    res.status(400).json(err);
+  });
 });
 
-router.get('/api/workouts', (req, res) => {
-  Workout.aggregate([
-    {
-      $addFields: {
-        totalDuration: {
-          $sum: '$exercises.duration',
-        },
-      },
-    },
-  ])
-    .then((dbWorkouts) => {
-      res.json(dbWorkouts);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-});
+// Create a new workout
+router.post("/api/workouts", ({ body }, res) => {
+  db.Workout.create(body)
+  .then(dbWorkout => {
+    res.json(dbWorkout);
+  })  
+  .catch(err => {
+    res.status(400).json(err);
+  });  
+});  
 
-router.get('/api/workouts/range', (req, res) => {
-  Workout.aggregate([
-    {
-      $addFields: {
-        totalDuration: {
-          $sum: '$exercises.duration',
-        },
-      },
-    },
-  ])
-    .sort({ _id: -1 })
-    .limit(7)
-    .then((dbWorkouts) => {
-      console.log(dbWorkouts);
-      res.json(dbWorkouts);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-});
+// Get workouts within a range
+router.get("/api/workouts/range", (req, res) => {
+  db.Workout.find({})
+  .then(dbWorkouts => {
+    res.json(dbWorkouts);
+  })    
+  .catch(err => {
+    res.status(400).json(err);
+  });    
+});    
 
 router.delete('/api/workouts', ({ body }, res) => {
-  Workout.findByIdAndDelete(body.id)
+  db.Workout.findByIdAndDelete(body.id)
     .then(() => {
       res.json(true);
     })
